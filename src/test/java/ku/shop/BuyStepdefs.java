@@ -23,6 +23,15 @@ public class BuyStepdefs {
         catalog.addProduct(name, price);
     }
 
+    @Given("the following products exist:")
+    public void the_following_products_exist(DataTable table) {
+        Map<String,Double> data = table.asMap(String.class, Double.class);
+
+        for (String name : data.keySet()) {
+            double price = data.get(name);
+            catalog.addProduct(name, price);
+        }
+    }
     @When("I buy (.+) with quantity (.+)")
     public void i_buy_with_quantity(String name, int quant) {
         Product prod = catalog.getProduct(name);
@@ -32,6 +41,12 @@ public class BuyStepdefs {
     @Then("total should be (.+)")
     public void total_should_be(double total) {
         assertEquals(total, order.getTotal());
+    }
+
+    @Then("I (.+) that not exist in shop")
+    public void should_cannot_buy_because(String name) throws CheckProductException {
+        assertThrows(CheckProductException.class,
+                () -> catalog.getProduct(name));
     }
 }
 
